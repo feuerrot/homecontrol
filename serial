@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+import serial
+import sys
+import threading
+import time
+
+serielle = serial.Serial("/dev/ttyUSB0")
+data = None
+datalock = threading.Lock()
+writeevent = threading.Event()
+
+class ser_read(threading.Thread):
+	def __init__(self,ser):
+		threading.Thread.__init__(self)
+		self.ser = ser
+	
+	def run(self):
+		while True:
+			self.data = self.ser.read(4)
+			with datalock:
+				if (data != self.data):
+					data = self.data
+
+class ser_write(threading.Thread):
+	def __init__(self,ser):
+		threading.Thread.__init__(self)
+		self.ser = ser
+	
+	def run(self):
+		while True:
+			writeevent.wait()
+			with datalock:
+				writeevent.clear()
+				self.ser.write(data)
+
+read_thread  = ser_read(serielle)
+read_thread.start()
+write_thread = ser_write(serielle)
+write_thread.start()
+
+while True:
+	time.sleep(1)
+	print(threading.active_count())
