@@ -33,8 +33,7 @@ class ser_write(threading.Thread):
 				writeevent.clear()
 				self.ser.write(data)
 
-read_thread  = ser_read(serielle)
-read_thread.start()
+ser_read(serielle).start()
 write_thread = ser_write(serielle)
 write_thread.start()
 
