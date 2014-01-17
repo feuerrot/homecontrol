@@ -34,8 +34,7 @@ class ser_write(threading.Thread):
 				self.ser.write(data)
 
 ser_read(serielle).start()
-write_thread = ser_write(serielle)
-write_thread.start()
+ser_write(serielle).start()
 
 while True:
 	time.sleep(1)
